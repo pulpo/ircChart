@@ -1,0 +1,36 @@
+## Glowing Bear/Weechat
+##
+
+# weechat
+weechat:
+  image: eggbean/weechat
+  persistence: 
+    enabled: true
+  hostUrl: weechat.labs.openbits.com.ar
+  ingress:
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      kubernetes.io/ingress.class: "traefik"
+      cert-manager.io/cluster-issuer: letsencrypt-labs-openbits
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+
+glowingbear:
+  enabled: false 
+  hostUrl: glowingbear.labs.openbits.com.ar
+  ingress:
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      kubernetes.io/ingress.class: "traefik"
+      cert-manager.io/cluster-issuer: letsencrypt-labs-openbits
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+global:
+  glowingBear:
+    enabled: true
+    hostUrl: glowingbear.openbits.com.ar
+

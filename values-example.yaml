@@ -3,8 +3,8 @@
 
 # weechat
 weechat:
-  persistence:
-    existingClaim: weechat
+  persistence: 
+    enabled: true
   hostUrl: weechat.example.com
   resources:
     requests:

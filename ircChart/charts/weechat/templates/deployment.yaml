@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "weechat.fullname" . }}
@@ -8,6 +8,9 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  selector: 
+    matchLabels:
+      app: {{ template "weechat.fullname" . }}
   template:
     metadata:
       labels:
@@ -16,9 +19,14 @@ spec:
       containers:
       - name: {{ template "weechat.fullname" . }}
         image: "{{ .Values.image }}"
+        env:
+        - name: WEECHAT_HOME
+          value: "/weechat"
+        command: ["weechat-headless"]
+        args: ["--dir '/weechat/' --run-command '/connect libera' --stdout"]
         imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
-        stdin: true
-        tty: true
+        stdin: false 
+        tty: false 
         ports:
         - name: weechat
           containerPort: 9000
@@ -29,11 +37,13 @@ spec:
 {{ toYaml .Values.resources | indent 10 }}
       volumes:
       - name: weechat
-{{- if .Values.persistence.existingClaim }}
-{{- /* Always prefer an existingClaim if that is set */}}
-      persistentVolumeClaim:
-        claimName: {{ .Values.persistence.existingClaim }}
-{{- else -}}
-      persistentVolumeClaim:
-        claimName: {{ include "weechat.fullname" . }}
-{{- end }}
+        persistentVolumeClaim:
+          claimName: {{ include "weechat.fullname" . }}
+        #{{- if .Values.persistence.existingClaim }}
+        #{{- /* Always prefer an existingClaim if that is set */}}
+        #        persistentVolumeClaim:
+        #          claimName: {{ .Values.persistence.existingClaim }}
+        #{{- else -}}
+        #        persistentVolumeClaim:
+        #          claimName: {{ include "weechat.fullname" . }}
+        #{{- end }}

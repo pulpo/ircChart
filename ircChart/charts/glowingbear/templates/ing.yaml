@@ -1,22 +1,28 @@
-apiVersion: extensions/v1beta1
+{{- $values := .Values.ingress -}}
+apiVersion: networking.k8s.io/v1 
 kind: Ingress
 metadata:
   name: {{ template "gb.fullname" . }}
-  {{- with .Values.annotations }}
   annotations:
+  {{- if $values.annotations }}
+  annotations:
+    {{- with $values.annotations }}
     {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- end }}
 spec:
   tls:
   - hosts:
     - {{ .Values.hostUrl }}
-    secretName: gb-cert
+    secretName: "{{ template "gb.fullname" . }}-cert"
   rules:
   - host: {{ .Values.hostUrl }}
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ template "gb.fullname" . }}
-          servicePort: 80
-
+          service:
+            name: {{ template "gb.fullname" . }}
+            port: 
+              number: 80

@@ -1,5 +1,5 @@
 {{- $values := .Values.ingress -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1 
 kind: Ingress
 metadata:
   name: {{ template "weechat.fullname" . }}
@@ -20,7 +20,9 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ template "weechat.fullname" . }}
-          servicePort: 80
-
+          service:
+            name: {{ template "weechat.fullname" . }}
+            port: 
+              number: 80
